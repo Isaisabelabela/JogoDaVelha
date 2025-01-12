@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo da Velha</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 5px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: bold;
+      color: #333;
+      background-color: white;
+      border: 2px solid #555;
+      cursor: pointer;
+    }
+    .cell.taken {
+      pointer-events: none;
+    }
+    .message {
+      font-size: 20px;
+      margin-top: 20px;
+    }
+    .reset {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    .reset:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Jogo da Velha</h1>
+  <div class="board" id="board"></div>
+  <div class="message" id="message">Vez do jogador X</div>
+  <button class="reset" onclick="resetGame()">Reiniciar Jogo</button>
+
+  <script>
+    const board = document.getElementById('board');
+    const message = document.getElementById('message');
+    let currentPlayer = 'X'; // Jogador atual
+    let gameActive = true;
+    let gameState = Array(9).fill(""); // Estado do jogo
+
+    // Combinações vencedoras
+    const winningConditions = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+
+    // Cria as células no tabuleiro
+    function createBoard() {
+      board.innerHTML = ""; // Limpa o tabuleiro
+      gameState.forEach((cell, index) => {
+        const cellElement = document.createElement('div');
+        cellElement.classList.add('cell');
+        cellElement.dataset.index = index;
+        cellElement.addEventListener('click', handleCellClick);
+        board.appendChild(cellElement);
+      });
+    }
+
+    // Evento de clique na célula
+    function handleCellClick(event) {
+      const clickedCell = event.target;
+      const clickedIndex = clickedCell.dataset.index;
+
+      if (gameState[clickedIndex] !== "" || !gameActive) return;
+
+      // Atualiza o estado do jogo
+      gameState[clickedIndex] = currentPlayer;
+      clickedCell.textContent = currentPlayer;
+      clickedCell.classList.add('taken');
+
+      // Verifica se alguém venceu
+      checkWinner();
+    }
+
+    // Verifica se há um vencedor ou empate
+    function checkWinner() {
+      let roundWon = false;
+
+      for (let i = 0; i < winningConditions.length; i++) {
+        const [a, b, c] = winningConditions[i];
+        if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+          roundWon = true;
+          break;
+        }
+      }
+
+      if (roundWon) {
+        message.textContent = `Jogador ${currentPlayer} venceu! 🎉`;
+        gameActive = false;
+        return;
+      }
+
+      // Verifica se deu empate
+      if (!gameState.includes("")) {
+        message.textContent = "Empate! 😐";
+        gameActive = false;
+        return;
+      }
+
+      // Alterna o jogador
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      message.textContent = `Vez do jogador ${currentPlayer}`;
+    }
+
+    // Reinicia o jogo
+    function resetGame() {
+      currentPlayer = 'X';
+      gameActive = true;
+      gameState = Array(9).fill("");
+      message.textContent = "Vez do jogador X";
+      createBoard();
+    }
+
+    // Inicializa o tabuleiro
+    createBoard();
+  </script>
+</body>
+</html>
