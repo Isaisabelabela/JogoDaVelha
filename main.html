@@ -1,0 +1,91 @@
+<meta charset="UTF-8">
+<script>
+// Função para inicializar o tabuleiro
+function criarTabuleiro() {
+    return [
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', '']
+    ];
+}
+
+// Função para exibir o tabuleiro
+function exibirTabuleiro(tabuleiro) {
+    console.log(tabuleiro.map(linha => linha.join(' | ')).join('\n---------\n'));
+}
+
+// Função para verificar se algum jogador venceu
+function verificarVitoria(tabuleiro, jogador) {
+    // Verificar linhas, colunas e diagonais
+    for (let i = 0; i < 3; i++) {
+        if (tabuleiro[i].every(celula => celula === jogador)) return true; // Linha
+        if (tabuleiro.every(linha => linha[i] === jogador)) return true; // Coluna
+    }
+
+    if (tabuleiro[0][0] === jogador && tabuleiro[1][1] === jogador && tabuleiro[2][2] === jogador) return true; // Diagonal
+    if (tabuleiro[0][2] === jogador && tabuleiro[1][1] === jogador && tabuleiro[2][0] === jogador) return true; // Diagonal reversa
+
+    return false;
+}
+
+// Função para verificar se o jogo terminou em empate
+function verificarEmpate(tabuleiro) {
+    return tabuleiro.every(linha => linha.every(celula => celula !== ''));
+}
+
+// Função para realizar uma jogada
+function realizarJogada(tabuleiro, jogador, linha, coluna) {
+    if (tabuleiro[linha][coluna] === '') {
+        tabuleiro[linha][coluna] = jogador;
+        return true;
+    }
+    return false;
+}
+
+// Função principal para simular o jogo
+function jogarJogo() {
+    let tabuleiro = criarTabuleiro();
+    let jogadores = ['X', 'O']; // Alternar entre X e O
+    let jogada = 0;
+    
+    // Jogadas automáticas (simulando)
+    while (jogada < 9) {
+        let jogadorAtual = jogadores[jogada % 2];
+        
+        // Simulação de uma jogada: escolher aleatoriamente uma posição vazia
+        let linha, coluna;
+        do {
+            linha = Math.floor(Math.random() * 3);
+            coluna = Math.floor(Math.random() * 3);
+        } while (!realizarJogada(tabuleiro, jogadorAtual, linha, coluna));
+        
+        console.log(`Jogada ${jogada + 1}: Jogador ${jogadorAtual} escolheu posição (${linha + 1}, ${coluna + 1})`);
+        exibirTabuleiro(tabuleiro);
+        
+        // Verificar vitória
+        if (verificarVitoria(tabuleiro, jogadorAtual)) {
+            console.log(`Jogador ${jogadorAtual} venceu!`);
+            return;
+        }
+        
+        // Verificar empate
+        if (verificarEmpate(tabuleiro)) {
+            console.log("Empate! O jogo terminou sem vencedor.");
+            return;
+        }
+
+        jogada++;
+    }
+}
+
+// Função main para iniciar o jogo
+function main() {
+    console.log("Iniciando o jogo da velha...");
+    jogarJogo();
+}
+
+// Chamar a função main para iniciar o jogo
+main();
+
+
+</script>
